@@ -1,0 +1,2 @@
+
+Your capstone project is an innovative online platform designed to facilitate the creation and sharing of community updates, Entertainment news. Users can either create new communities or join existing ones using unique keys. Within each community, members can create news posts, interact with posts through likes and stay updated with a personalized feed. The platform fosters community engagement and collaboration through seamless news sharing and interaction features.
