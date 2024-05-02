@@ -8,12 +8,11 @@ const userSchema = new Schema({
     username:{
         type: String,
         required: true,
-        unique:true,
         validate: {
             validator: (value) => {
-                return /^[a-zA-Z0-9]+$/.test(value);
+                return /^[a-zA-Z0-9 ]+$/.test(value);
             },
-            message: 'Username can only contain letters, numbers.'
+            message: 'Username can only contain letters, numbers and spaces.'
         }
     },
     email: {
@@ -23,9 +22,11 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+    },
+    googleId: {
+        type: String
     }
-})
+},{timestamp: true})
 
 // Signup
 userSchema.statics.signup = async function(username, email, password) {

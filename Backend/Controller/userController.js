@@ -1,4 +1,7 @@
-const User = require("../Model/userModel")
+const User = require("../Model/userModel");
+const passport = require("passport");
+require("../Middleware/passport")
+
 
 
 // login user 
@@ -35,4 +38,22 @@ const signupUser = async (req, res)=>{
 
 }
 
-module.exports = {loginUser, signupUser}
+//google signin
+const google = passport.authenticate('google', { scope: ['email', 'profile'] })
+
+const googleCallBack = (req, res, next) => {
+    passport.authenticate("google", (err, user) => {
+        if (err) {
+            console.error("Google authentication error:", err);
+            return res.status(500).json({ error: "An error occurred during Google authentication" });
+        }
+        if (!user) {
+            console.error("Google authentication failed");
+            return res.status(401).json({ error: "Google authentication failed" });
+        }
+        res.redirect("http://localhost:5173/Home");
+    })(req, res, next);
+}
+
+
+module.exports = {loginUser, signupUser, google, googleCallBack}
