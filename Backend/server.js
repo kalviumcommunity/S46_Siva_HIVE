@@ -4,6 +4,7 @@ const mongoose = require("mongoose")
 const cors = require("cors");
 const userRoutes = require("./Routes/userRoutes");
 const passport = require("passport");
+
 //Middleware
 const app = express();
 app.use(express.json());
