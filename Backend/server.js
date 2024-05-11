@@ -3,6 +3,7 @@ require("dotenv").config();
 const mongoose = require("mongoose")
 const cors = require("cors");
 const userRoutes = require("./Routes/userRoutes");
+const communityRoutes = require('./Routes/CommunityRoutes')
 const passport = require("passport");
 
 //Middleware
@@ -16,6 +17,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/bee/user', userRoutes)
+app.use('bee/hive', communityRoutes)
 app.use(passport.initialize())
 
 mongoose
