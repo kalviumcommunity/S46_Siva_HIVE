@@ -15,6 +15,9 @@ const loginUser = async(req, res)=>{
 
     try{
         const user = await User.login(email, password)
+        if (!user) {
+            throw new Error('User not found');
+        }
         // create token
         const token = createToken(user._id)
 
@@ -59,7 +62,6 @@ const googleCallBack = (req, res, next) => {
             console.error("Google authentication failed");
             return res.status(401).json({ error: "Google authentication failed" });
         }
-        res.redirect(`http://localhost:5173/Home?token=${token}`);
     })(req, res, next);
 }
 
