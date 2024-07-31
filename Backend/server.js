@@ -6,7 +6,7 @@ const passport = require("passport");
 const http = require('http');
 
 const userRoutes = require("./Routes/userRoutes");
-const communityRoutes = require('./Routes/communityRoutes');
+const communityRoutes = require('./Routes/CommunityRoutes');
 const messageRoutes = require('./Routes/messageRoutes');
 
 const app = express();
