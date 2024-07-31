@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const { 
+  createCommunity, 
+  requestToJoinCommunity, 
+  approveJoinRequest, 
+} = require('../Controller/communityController');
+const auth = require('../Middleware/auth');
 
-const { createCommunity, joinCommunity, leaveCommunity } = require('../Controller/communityController');
+router.post('/', auth, createCommunity);
+router.post('/:communityId/join', auth, requestToJoinCommunity);
+router.post('/:communityId/approve/:userId', auth, approveJoinRequest);
 
-// Create community
-router.post('/communities', createCommunity);
-
-// Join community
-router.post('/communities/join', joinCommunity);
-
-// Leave community
-router.delete('/communities/:communityId', leaveCommunity);
 
 module.exports = router;

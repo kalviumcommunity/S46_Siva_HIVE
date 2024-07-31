@@ -1,7 +1,6 @@
 const passport = require("passport");
 const UserModel = require("../Model/userModel");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const jwt = require("jsonwebtoken");
 
 passport.use(
   new GoogleStrategy(
@@ -18,16 +17,14 @@ passport.use(
 
         if (!user) {
           user = new UserModel({
-            email: email,
-            username: profile.displayName,
             googleId: profile.id,
+            email: email,
+            userName: profile.displayName,
           });
           await user.save();
         }
 
-        const token = jwt.sign({ _id: user._id }, process.env.SECRET, { expiresIn: '3d' });
-
-        return done(null, {user, token});
+        return done(null, user);
       } catch (err) {
         return done(err, null);
       }
