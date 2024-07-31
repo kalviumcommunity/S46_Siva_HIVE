@@ -1,24 +1,17 @@
 const User = require("../Model/userModel");
 const Community = require("../Model/communityModel");
 
-const generateUniqueKey = () => {
-  return "uniqueKey"; 
-};
 
 const createCommunity = async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description} = req.body;
   const userId = req.user._id; 
 
-  const uniqueKey = generateUniqueKey(); 
-
-  try {
     const community = await Community.create({
       name,
       description,
       creator: userId,
       admin: [userId], 
       members: [userId], 
-      uniqueKey,
     });
 
     res.status(201).json(community);
@@ -27,8 +20,8 @@ const createCommunity = async (req, res) => {
   }
 };
 
+
 const joinCommunity = async (req, res) => {
-    const { uniqueKey } = req.body;
     const userId = req.user._id; 
   
     try {
