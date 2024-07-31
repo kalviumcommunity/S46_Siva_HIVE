@@ -77,8 +77,63 @@ const approveJoinRequest = async (req, res) => {
   }
 };
 
+const leaveCommunity = async (req, res) => {
+  const { communityId } = req.params;
+  const userId = req.user._id;
+
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(404).json({ error: 'Community not found' });
+    }
+
+    if (!community.members.includes(userId)) {
+      return res.status(400).json({ error: 'You are not a member of this community' });
+    }
+
+    community.members = community.members.filter(member => member.toString() !== userId.toString());
+    await community.save();
+
+    res.status(200).json({ message: 'Successfully left the community' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
+const updateCommunityDescription = async (req, res) => {
+  const { communityId } = req.params;
+  const { description } = req.body;
+  const userId = req.user._id;
+
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(404).json({ error: 'Community not found' });
+    }
+
+    if (!community.admin.includes(userId)) {
+      return res.status(403).json({ error: 'You do not have permission to update this community' });
+    }
+
+    // Combine the existing description with the new input
+    const updatedDescription = community.description
+      ? `${community.description}\n\n${description}`
+      : description;
+
+    community.description = updatedDescription;
+    await community.save();
+
+    res.status(200).json({ message: 'Community description updated successfully', community });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createCommunity,
   requestToJoinCommunity,
-  approveJoinRequest
+  approveJoinRequest,
+  leaveCommunity,
+  updateCommunityDescription
 };
