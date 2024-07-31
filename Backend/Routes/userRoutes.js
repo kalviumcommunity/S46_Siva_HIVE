@@ -3,8 +3,6 @@ const router = express.Router()
 
 const {loginUser, signupUser, google, googleCallBack} = require('../Controller/userController')
 
-
-
 // Login
 router.post('/login', loginUser)
 
@@ -12,7 +10,7 @@ router.post('/login', loginUser)
 router.post('/signup', signupUser)
 
 //Google
-router.get('/auth/google', google)
+router.get('/auth/google',google)
 
 router.get('/auth/google/callback', googleCallBack)
 
