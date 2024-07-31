@@ -4,13 +4,16 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const passport = require("passport");
 const http = require('http');
+const socketIo = require('socket.io');
 
 const userRoutes = require("./Routes/userRoutes");
 const communityRoutes = require('./Routes/CommunityRoutes');
 const messageRoutes = require('./Routes/messageRoutes');
+const socketHandler = require('./socket/socketHandler');
 
 const app = express();
 const server = http.createServer(app);
+const io = socketIo(server);
 
 // Middleware
 app.use(express.json());
@@ -26,6 +29,9 @@ app.use((req, res, next) => {
 app.use('/bee/user', userRoutes);
 app.use('/bee/community', communityRoutes);
 app.use('/bee/message', messageRoutes);
+
+// Socket.IO
+io.on('connection', socketHandler);
 
 mongoose
   .connect(process.env.MONGO_URI)
