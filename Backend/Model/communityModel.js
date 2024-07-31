@@ -22,11 +22,17 @@ const communitySchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }],
-  uniqueKey: {
-    type: String,
-    required: true,
-    unique: true,
-  },
+  joinRequests: [{
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending'
+    }
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Community', communitySchema);

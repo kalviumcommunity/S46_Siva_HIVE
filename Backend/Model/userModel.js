@@ -1,85 +1,64 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
-const validator = require('validator')
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+require('dotenv').config();
 
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    username:{
-        type: String,
-        required: true,
-        validate: {
-            validator: (value) => {
-                return /^[a-zA-Z0-9 ]+$/.test(value);
-            },
-            message: 'Username can only contain letters, numbers and spaces.'
-        }
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-    },
-    googleId: {
-        type: String
-    }
-},{timestamp: true})
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  username: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  googleId: {
+    type: String
+  }
+},{timestamp: true});
 
-// Signup
+// Signup method
 userSchema.statics.signup = async function(username, email, password) {
+  if (!email || !password || !username) {
+    throw Error('All fields must be filled');
+  }
+  
+  const exists = await this.findOne({ $or: [{ email }, { username }] });
+  if (exists) {
+    throw Error('Email or username already in use');
+  }
 
-    // Validation
-    if(!username || !email || !password){
-        throw Error('All fields must be filled')
-    }
-    if (!validator.isEmail(email)) {
-        throw Error("Email is not valid")
-    }
-    if (!validator.isStrongPassword(password)) {
-        throw Error("Password not strong enough")
-    }
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(password, salt);
 
-
-
-    const exists = await this.findOne({ email });
-
-    if(exists) {
-        throw Error('Email already exists')
-    }
-
-    const salt = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(password, salt)
-
-    const user = await this.create({ username, email, password: hash })
-
-    return user;
+  const user = await this.create({ email, password: hash, username });
+  return user;
 };
 
-// Login
-
+// Login method
 userSchema.statics.login = async function(email, password) {
-    if(!email || !password){
-        throw Error('All fields must be filled')
-    }
+  if (!email || !password) {
+    throw Error('All fields must be filled');
+  }
 
-    const user = await this.findOne({email})
+  const user = await this.findOne({ email });
+  if (!user) {
+    throw Error('Incorrect email');
+  }
 
-    if(!user) {
-        throw Error('Incorrect email')
-    }
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    throw Error('Incorrect password');
+  }
 
-    const match = await bcrypt.compare(password, user.password)
+  return user;
+};
 
-    if(!match) {
-        throw Error('Incorrect password')
-    }
-
-    return user
-
-}
-
-
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model('User', userSchema);
