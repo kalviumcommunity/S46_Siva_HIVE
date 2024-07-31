@@ -24,10 +24,30 @@ const userSchema = new Schema({
   }
 },{timestamp: true});
 
+// Mail Validation
+const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+  
+//   Password Validation
+  const validatePassword = (password) => {
+    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return re.test(password);
+  };
+
 // Signup method
 userSchema.statics.signup = async function(username, email, password) {
   if (!email || !password || !username) {
     throw Error('All fields must be filled');
+  }
+
+  if (!validateEmail(email)) {
+    throw Error('Invalid email format');
+  }
+
+  if (!validatePassword(password)) {
+    throw Error('Password must be at least 8 characters with an uppercase letter, number, and special character');
   }
   
   const exists = await this.findOne({ $or: [{ email }, { username }] });
