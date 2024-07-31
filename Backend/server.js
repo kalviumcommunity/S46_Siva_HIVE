@@ -15,7 +15,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Middleware
+//Middleware
 app.use(express.json());
 app.use(cors());
 app.use(passport.initialize());
