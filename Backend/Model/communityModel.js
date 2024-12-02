@@ -10,22 +10,18 @@ const communitySchema = new Schema({
     type: String,
   },
   creator: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   },
   admin: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
   }],
   members: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
   }],
   joinRequests: [{
     user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
     },
     status: {
       type: String,
