@@ -3,15 +3,15 @@ const Community = require("../Model/communityModel");
 
 const createCommunity = async (req, res) => {
   const { name, description } = req.body;
-  const userId = req.user._id; 
+  const username = req.user.username;
 
   try {
     const community = await Community.create({
       name,
       description,
-      creator: userId,
-      admin: [userId], 
-      members: [userId]
+      creator: username,
+      admin: [username], 
+      members: [username]
     });
 
     res.status(201).json(community);
@@ -22,7 +22,7 @@ const createCommunity = async (req, res) => {
 
 const requestToJoinCommunity = async (req, res) => {
   const { communityId } = req.params;
-  const userId = req.user._id; 
+  const username = req.user.username;
 
   try {
     const community = await Community.findById(communityId);
@@ -30,16 +30,16 @@ const requestToJoinCommunity = async (req, res) => {
       return res.status(404).json({ error: 'Community not found' });
     }
 
-    if (community.members.includes(userId)) {
+    if (community.members.includes(username)) {
       return res.status(400).json({ error: 'You are already a member' });
     }
 
-    const existingRequest = community.joinRequests.find(request => request.user.toString() === userId.toString());
+    const existingRequest = community.joinRequests.find(request => request.user === username);
     if (existingRequest) {
       return res.status(400).json({ error: 'You have already requested to join this community' });
     }
 
-    community.joinRequests.push({ user: userId });
+    community.joinRequests.push({ user: username, status: 'pending' });
     await community.save();
 
     res.status(200).json({ message: 'Join request sent successfully' });
@@ -48,10 +48,9 @@ const requestToJoinCommunity = async (req, res) => {
   }
 };
 
-
 const approveJoinRequest = async (req, res) => {
-  const { communityId, userId } = req.params;
-  const adminId = req.user._id;
+  const { communityId, username } = req.params;
+  const adminUsername = req.user.username;
 
   try {
     const community = await Community.findById(communityId);
@@ -59,17 +58,19 @@ const approveJoinRequest = async (req, res) => {
       return res.status(404).json({ error: 'Community not found' });
     }
 
-    if (!community.admin.includes(adminId)) {
+    if (!community.admin.includes(adminUsername)) {
       return res.status(403).json({ error: 'You do not have permission to approve requests' });
     }
 
-    const joinRequest = community.joinRequests.find(request => request.user.toString() === userId && request.status === 'pending');
-    if (!joinRequest) {
+    const joinRequestIndex = community.joinRequests.findIndex(request => request.user === username && request.status === 'pending');
+    if (joinRequestIndex === -1) {
       return res.status(404).json({ error: 'Join request not found' });
     }
 
-    joinRequest.status = 'approved';
-    community.members.push(userId);
+    community.joinRequests[joinRequestIndex].status = 'approved';
+    if (!community.members.includes(username)) {
+      community.members.push(username);
+    }
     await community.save();
 
     res.status(200).json({ message: 'Join request approved successfully' });
@@ -80,7 +81,7 @@ const approveJoinRequest = async (req, res) => {
 
 const leaveCommunity = async (req, res) => {
   const { communityId } = req.params;
-  const userId = req.user._id;
+  const username = req.user.username;
 
   try {
     const community = await Community.findById(communityId);
@@ -88,11 +89,11 @@ const leaveCommunity = async (req, res) => {
       return res.status(404).json({ error: 'Community not found' });
     }
 
-    if (!community.members.includes(userId)) {
+    if (!community.members.includes(username)) {
       return res.status(400).json({ error: 'You are not a member of this community' });
     }
 
-    community.members = community.members.filter(member => member.toString() !== userId.toString());
+    community.members = community.members.filter(member => member !== username);
     await community.save();
 
     res.status(200).json({ message: 'Successfully left the community' });
@@ -101,11 +102,9 @@ const leaveCommunity = async (req, res) => {
   }
 };
 
-
-const updateCommunityDescription = async (req, res) => {
+const getCommunityDescription = async (req, res) => {
   const { communityId } = req.params;
-  const { description } = req.body;
-  const userId = req.user._id;
+  const username = req.user.username;
 
   try {
     const community = await Community.findById(communityId);
@@ -113,16 +112,32 @@ const updateCommunityDescription = async (req, res) => {
       return res.status(404).json({ error: 'Community not found' });
     }
 
-    if (!community.admin.includes(userId)) {
+    if (!community.members.includes(username)) {
+      return res.status(403).json({ error: 'You are not a member of this community' });
+    }
+
+    res.status(200).json({ description: community.description });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const updateCommunityDescription = async (req, res) => {
+  const { communityId } = req.params;
+  const { description } = req.body;
+  const username = req.user.username;
+
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(404).json({ error: 'Community not found' });
+    }
+
+    if (!community.admin.includes(username)) {
       return res.status(403).json({ error: 'You do not have permission to update this community' });
     }
 
-    // Combine the existing description with the new input
-    const updatedDescription = community.description
-      ? `${community.description}\n\n${description}`
-      : description;
-
-    community.description = updatedDescription;
+    community.description = description;
     await community.save();
 
     res.status(200).json({ message: 'Community description updated successfully', community });
@@ -136,5 +151,6 @@ module.exports = {
   requestToJoinCommunity,
   approveJoinRequest,
   leaveCommunity,
+  getCommunityDescription,
   updateCommunityDescription
 };
