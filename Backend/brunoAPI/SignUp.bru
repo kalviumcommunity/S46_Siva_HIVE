@@ -1,0 +1,23 @@
+meta {
+  name: SignUp
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/bee/community
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2M3ZjdiYmU4ODYwZjIyNjk1ZWU1NTMiLCJpYXQiOjE3NDExNTgzMzEsImV4cCI6MTc0MTQxNzUzMX0.OCNPFo6I8Tdi8t164aYjWacfkOLXhKiBHZrUmUB0OSw
+}
+
+body:json {
+  {
+  "name": "GoldenCircle",
+  "description": "A community for spy-agents"
+  }
+}
