@@ -4,7 +4,7 @@ import { useAuthContext } from './Context/useAuthContext'
 import Home from './Slides/Home'
 import Login from './Slides/Login'
 
-function App() {
+function App() {    
   const {user} = useAuthContext()
 
   return (
