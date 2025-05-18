@@ -22,7 +22,7 @@ const userSchema = new Schema({
   googleId: {
     type: String
   }
-},{timestamp: true});
+},{timestamps: true});
 
 // Mail Validation
 const validateEmail = (email) => {
