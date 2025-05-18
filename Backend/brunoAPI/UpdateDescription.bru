@@ -1,0 +1,23 @@
+meta {
+  name: UpdateDescription
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/bee/community/67c7f87ae8860f22695ee556/description
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2M3ZjdiYmU4ODYwZjIyNjk1ZWU1NTMiLCJpYXQiOjE3NDExNTgzMzEsImV4cCI6MTc0MTQxNzUzMX0.OCNPFo6I8Tdi8t164aYjWacfkOLXhKiBHZrUmUB0OSw
+}
+
+body:json {
+  {
+    "description": "Golden circle is here"
+  }
+  
+}
