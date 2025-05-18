@@ -3,7 +3,7 @@ const Community = require('../Model/communityModel');
 
 const sendMessage = async (req, res) => {
   const { communityId, content } = req.body;
-  const userId = req.user._id;
+  const username = req.user.username;
 
   try {
     const community = await Community.findById(communityId);
@@ -11,13 +11,13 @@ const sendMessage = async (req, res) => {
       return res.status(404).json({ error: 'Community not found' });
     }
 
-    if (!community.members.includes(userId)) {
+    if (!community.members.includes(username)) {
       return res.status(403).json({ error: 'You are not a member of this community' });
     }
 
     const message = await Message.create({
       community: communityId,
-      sender: userId,
+      sender: username,
       content
     });
 
@@ -29,7 +29,7 @@ const sendMessage = async (req, res) => {
 
 const getMessages = async (req, res) => {
   const { communityId } = req.params;
-  const userId = req.user._id;
+  const username = req.user.username;
 
   try {
     const community = await Community.findById(communityId);
@@ -37,7 +37,7 @@ const getMessages = async (req, res) => {
       return res.status(404).json({ error: 'Community not found' });
     }
 
-    if (!community.members.includes(userId)) {
+    if (!community.members.includes(username)) {
       return res.status(403).json({ error: 'You are not a member of this community' });
     }
 

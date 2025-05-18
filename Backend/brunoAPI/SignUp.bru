@@ -1,21 +1,23 @@
 meta {
-  name: LeaveCommunity
+  name: SignUp
   type: http
-  seq: 4
+  seq: 1
 }
 
-delete {
-  url: http://localhost:3000/bee/community/67c7f87ae8860f22695ee556
-  body: none
+post {
+  url: http://localhost:3000/bee/community
+  body: json
   auth: none
 }
 
 headers {
+  Content-Type: application/json
   Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2M3ZjdiYmU4ODYwZjIyNjk1ZWU1NTMiLCJpYXQiOjE3NDExNTgzMzEsImV4cCI6MTc0MTQxNzUzMX0.OCNPFo6I8Tdi8t164aYjWacfkOLXhKiBHZrUmUB0OSw
 }
 
-response:json {
+body:json {
   {
-    "message": "Successfully left the community"
+  "name": "GoldenCircle",
+  "description": "A community for spy-agents"
   }
 }
