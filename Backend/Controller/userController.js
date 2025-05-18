@@ -63,6 +63,7 @@ const googleCallBack = (req, res, next) => {
     
     // Create token for authenticated user
     const token = createToken(user._id);
+    // res.status(200).json({ email: user.email, token });
     res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${token}&email=${user.email}`);
     
   })(req, res, next);
